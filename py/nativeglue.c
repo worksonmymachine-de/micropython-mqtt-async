@@ -41,7 +41,7 @@
 #define DEBUG_printf(...) (void)0
 #endif
 
-#if MICROPY_EMIT_NATIVE
+#if MICROPY_ENABLE_NATIVE_CODE
 
 int mp_native_type_from_qstr(qstr qst) {
     switch (qst) {
@@ -91,7 +91,7 @@ mp_uint_t mp_native_from_obj(mp_obj_t obj, mp_uint_t type) {
 
 #endif
 
-#if MICROPY_EMIT_MACHINE_CODE
+#if MICROPY_EMIT_INLINE_ASM || MICROPY_ENABLE_NATIVE_CODE
 
 // convert a native value to a MicroPython object based on type
 mp_obj_t mp_native_to_obj(mp_uint_t val, mp_uint_t type) {
@@ -115,7 +115,7 @@ mp_obj_t mp_native_to_obj(mp_uint_t val, mp_uint_t type) {
 
 #endif
 
-#if MICROPY_EMIT_NATIVE && !MICROPY_DYNAMIC_COMPILER
+#if MICROPY_ENABLE_NATIVE_CODE && !MICROPY_DYNAMIC_COMPILER
 
 #if !MICROPY_PY_BUILTINS_SET
 mp_obj_t mp_obj_new_set(size_t n_args, mp_obj_t *items) {
@@ -329,8 +329,11 @@ const mp_fun_table_t mp_fun_table = {
     mp_obj_new_float_from_d,
     mp_obj_get_float_to_f,
     mp_obj_get_float_to_d,
+    mp_load_method_maybe,
     mp_get_buffer,
     mp_get_stream_raise,
+    mp_arg_parse_all,
+    mp_arg_parse_all_kw_array,
     mp_binary_get_size,
     mp_binary_get_val_array,
     mp_binary_set_val_array,
@@ -344,14 +347,15 @@ const mp_fun_table_t mp_fun_table = {
     &mp_type_fun_builtin_2,
     &mp_type_fun_builtin_3,
     &mp_type_fun_builtin_var,
+    &mp_type_Exception,
     &mp_stream_read_obj,
     &mp_stream_readinto_obj,
     &mp_stream_unbuffered_readline_obj,
     &mp_stream_write_obj,
 };
 
-#elif MICROPY_EMIT_NATIVE && MICROPY_DYNAMIC_COMPILER
+#elif MICROPY_ENABLE_NATIVE_CODE && MICROPY_DYNAMIC_COMPILER
 
 const int mp_fun_table;
 
-#endif // MICROPY_EMIT_NATIVE
+#endif // MICROPY_ENABLE_NATIVE_CODE
